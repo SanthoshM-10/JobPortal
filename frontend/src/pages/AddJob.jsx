@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createJob } from "../services/jobService";
+import { toast } from "react-toastify";
 
 function AddJob() {
 
@@ -35,14 +36,14 @@ function AddJob() {
 
             await createJob(job);
 
-            alert("Job Added Successfully!");
+            toast.success("Job Added Successfully!");
 
             navigate("/");
 
         } catch (error) {
 
             console.error(error);
-            alert("Failed to add Job");
+            toast.error("Failed to add Job");
 
         }
 

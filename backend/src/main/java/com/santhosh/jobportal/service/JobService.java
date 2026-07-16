@@ -6,11 +6,16 @@ import com.santhosh.jobportal.dto.JobRequestDTO;
 import com.santhosh.jobportal.dto.JobResponseDTO;
 import com.santhosh.jobportal.exception.JobNotFoundException;
 import com.santhosh.jobportal.model.Job;
+import com.santhosh.jobportal.model.User;
+import com.santhosh.jobportal.repository.ApplicationRepository;
 import com.santhosh.jobportal.repository.JobRepository;
-import jakarta.validation.Valid;
+import com.santhosh.jobportal.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,10 +27,16 @@ public class JobService {
 
     private final ModelMapper modelMapper;
 
+    private final UserRepository userRepository;
 
-    public JobService(JobRepository jobRepository, ModelMapper modelMapper){
+    private final ApplicationRepository applicationRepository;
+
+
+    public JobService(JobRepository jobRepository, UserRepository userRepository, ModelMapper modelMapper, ApplicationRepository applicationRepository){
         this.jobRepository = jobRepository;
+        this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.applicationRepository = applicationRepository;
     }
 
 //    public List<Job> getAllJobs(){
@@ -82,12 +93,35 @@ public class JobService {
 //    }
 
 
-    public JobResponseDTO addJob(JobRequestDTO dto){
+//    public JobResponseDTO addJob(JobRequestDTO dto){
+//        Job job = modelMapper.map(dto, Job.class);
+//
+//        Job savedJob = jobRepository.save(job);
+//
+//        return modelMapper.map(savedJob,JobResponseDTO.class);
+//    }
+
+    public JobResponseDTO addJob(JobRequestDTO dto) {
+
         Job job = modelMapper.map(dto, Job.class);
+
+        // Logged-in user's email
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        // Find recruiter
+        User recruiter = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("Recruiter not found"));
+
+        // Assign recruiter
+        job.setRecruiter(recruiter);
 
         Job savedJob = jobRepository.save(job);
 
-        return modelMapper.map(savedJob,JobResponseDTO.class);
+        return modelMapper.map(savedJob, JobResponseDTO.class);
     }
 
 //    public Job updateJob(Integer id, Job job){
@@ -140,11 +174,25 @@ public class JobService {
 //        jobRepository.deleteById(id);
 //    }
 
-    public void deleteJobById(Integer id){
-        Job job = jobRepository.findById(id)
-                .orElseThrow(() -> new JobNotFoundException("Job not found with id: "+id));
+//    public void deleteJobById(Integer id){
+//        Job job = jobRepository.findById(id)
+//                .orElseThrow(() -> new JobNotFoundException("Job not found with id: "+id));
+//
+//        jobRepository.deleteById(id);
+//    }
 
-        jobRepository.deleteById(id);
+    @Transactional
+    public void deleteJobById(Integer id) {
+
+        Job job = jobRepository.findById(id)
+                .orElseThrow(() ->
+                        new JobNotFoundException(
+                                "Job not found with id: " + id));
+
+        applicationRepository.deleteByJob(job);
+
+        jobRepository.delete(job);
+
     }
 
 //    public Job getJobById(Integer id) {
@@ -214,12 +262,80 @@ public class JobService {
         List<Job>  allJobsByExperience = jobRepository.findByExperience(experience);
         return allJobsByExperience
                 .stream()
-                .map(Job -> modelMapper.map(Job, JobResponseDTO.class))
+                .map(job -> modelMapper.map(job, JobResponseDTO.class))
                 .toList();
+
+    }
+
+//    public List<JobResponseDTO> searchJobs(String keyword){
+//        List<Job> jobs = jobRepository.searchJobs(keyword);
+//        return jobs.stream()
+//                .map(job -> modelMapper.map(job, JobResponseDTO.class))
+//                .toList();
+//    }
+
+    public Page<JobResponseDTO> searchJobs(
+            String keyword,
+            String location,
+            String jobType,
+            Pageable pageable) {
+
+        // Convert empty strings to null
+        if (keyword != null && keyword.isBlank()) {
+            keyword = null;
+        }
+
+        if (location != null && location.isBlank()) {
+            location = null;
+        }
+
+        if (jobType != null && jobType.isBlank()) {
+            jobType = null;
+        }
+
+        // Fetch filtered jobs from repository
+        Page<Job> jobs = jobRepository.searchJobs(
+                keyword,
+                location,
+                jobType,
+                pageable
+        );
+
+        // Convert Entity -> DTO
+        return jobs.map(job ->
+                modelMapper.map(job, JobResponseDTO.class)
+        );
 
     }
 
     public Page<Job> getJobs(Pageable pageable){
         return jobRepository.findAll(pageable);
+    }
+
+    public List<JobResponseDTO> getMyJobs() {
+        System.out.println("========== MY JOBS SERVICE ==========");
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+        System.out.println("Logged in Email : " + email);
+
+        User recruiter = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("Recruiter not found"));
+
+        System.out.println("Recruiter ID : " + recruiter.getId());
+
+        List<Job> jobs = jobRepository.findByRecruiter(recruiter);
+
+        System.out.println("Jobs Found : " + jobs.size());
+
+        jobs.forEach(job ->
+                System.out.println(job.getId() + " -> " + job.getTitle()));
+
+        return jobs.stream()
+                .map(job -> modelMapper.map(job, JobResponseDTO.class))
+                .toList();
     }
 }

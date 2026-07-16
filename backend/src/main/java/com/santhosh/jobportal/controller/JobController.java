@@ -8,6 +8,7 @@ import com.santhosh.jobportal.service.JobService;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,6 +74,40 @@ public class JobController {
         return new ResponseEntity<>(savedJob, HttpStatus.CREATED);
     }
 
+    //    @GetMapping("/jobs/search")
+//    public ResponseEntity<List<JobResponseDTO>> searchJobs(@RequestParam String keyword){
+//        List<JobResponseDTO> job = jobService.searchJobs(keyword);
+//        return new ResponseEntity<>(job, HttpStatus.OK);
+//    }
+
+    @GetMapping("/jobs/search")
+    public ResponseEntity<Page<JobResponseDTO>> searchJobs(
+
+            @RequestParam(required = false) String keyword,
+
+            @RequestParam(required = false) String location,
+
+            @RequestParam(required = false) String jobType,
+
+            @RequestParam(defaultValue = "0") int page,
+
+            @RequestParam(defaultValue = "10") int size
+
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<JobResponseDTO> jobs = jobService.searchJobs(
+                keyword,
+                location,
+                jobType,
+                pageable
+        );
+
+        return ResponseEntity.ok(jobs);
+
+    }
+
 //    @PutMapping("/jobs/{id}")
 //    public Job updateJob(@PathVariable Integer id,
 //                         @Valid @RequestBody Job job){
@@ -106,6 +141,16 @@ public class JobController {
         return ResponseEntity.ok("Job deleted successfully.");
     }
 
+    @GetMapping("/jobs/my")
+    public ResponseEntity<List<JobResponseDTO>> getMyJobs() {
+
+        System.out.println("========== MY JOBS CONTROLLER ==========");
+
+        List<JobResponseDTO> jobs = jobService.getMyJobs();
+
+        return ResponseEntity.ok(jobs);
+    }
+
 //    @GetMapping("/jobs/{id}")        //changed because we are jumping into the DTO(Data Transfer Object)
 //    public Job getJobById(@PathVariable Integer id){
 //        return jobService.getJobById(id);
@@ -137,7 +182,7 @@ public class JobController {
 
     @GetMapping("/jobs/location/{location}")
     public ResponseEntity<List<JobResponseDTO>> getAllJobsByLocation(@PathVariable String location){
-        List<JobResponseDTO> job = jobService.getAllJobsByCompany(location);
+        List<JobResponseDTO> job = jobService.getAllJobsByLocation(location);
         return new ResponseEntity<>(job, HttpStatus.OK);
     }
 
@@ -172,6 +217,8 @@ public class JobController {
         Page<Job> jobs = jobService.getJobs(pageable);
         return new ResponseEntity<>(jobs, HttpStatus.OK);
     }
+
+
 
 
 }

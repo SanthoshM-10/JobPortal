@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -53,5 +53,23 @@ public class Job {
 
     @NotNull(message = "Post date is required")
     private LocalDate postedDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recruiter_id")
+    private User recruiter;
+
+    @OneToMany(
+            mappedBy = "job",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Application> applications;
+
+    @OneToMany(
+            mappedBy = "job",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<SavedJob> savedJobs;
 
 }

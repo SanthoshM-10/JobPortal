@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getJobById, updateJob } from "../services/jobService";
-
+import { toast } from "react-toastify";
 function EditJob() {
 
     const { id } = useParams();
@@ -56,7 +56,7 @@ function EditJob() {
 
             await updateJob(id, job);
 
-            alert("Job Updated Successfully!");
+            toast.success("Job Updated Successfully!");
 
             navigate("/");
 
@@ -64,7 +64,7 @@ function EditJob() {
 
             console.error(error);
 
-            alert("Failed to update Job");
+            toast.error("Failed to update Job");
 
         }
 
