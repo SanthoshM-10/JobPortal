@@ -5,7 +5,7 @@ import { getMyProfile } from "../services/profileService";
 import {
     getMyProfileImage,
     getProfileImage
-} from "../services/profileImageService";
+} from "../services/ProfileImageService";
 
 function Navbar() {
 
