@@ -8,7 +8,7 @@ import {
     uploadProfileImage,
     getMyProfileImage,
     getProfileImage
-} from "../services/profileImageService";
+} from "../services/ProfileImageService";
 
 function Profile() {
 
