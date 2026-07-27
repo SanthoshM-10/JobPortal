@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: "https://jobportal-1-lgqt.onrender.com",
 });
 
 axiosInstance.interceptors.request.use(

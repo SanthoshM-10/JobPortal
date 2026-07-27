@@ -46,7 +46,8 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
-                "http://localhost:5173"
+                "http://localhost:5173",
+                "https://job-portal-lime-psi.vercel.app/"
         ));
 
         configuration.setAllowedMethods(List.of(
@@ -97,7 +98,7 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // ===================== JOB APIs =====================
-                        
+
                         // View jobs (Public)
                         .requestMatchers(HttpMethod.GET, "/jobs/**")
                         .permitAll()
