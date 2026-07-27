@@ -9,7 +9,8 @@ function Register() {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
-        password: ""
+        password: "",
+        role: "JOB_SEEKER"
     });
 
     const [error, setError] = useState("");
@@ -35,8 +36,7 @@ function Register() {
 
             navigate("/login");
 
-        }
-        catch (err) {
+        } catch (err) {
 
             console.log(err);
 
@@ -66,15 +66,10 @@ function Register() {
                             </h2>
 
                             {
-
                                 error &&
-
                                 <div className="alert alert-danger">
-
                                     {error}
-
                                 </div>
-
                             }
 
                             <form onSubmit={handleSubmit}>
@@ -124,11 +119,33 @@ function Register() {
 
                                 </div>
 
+                                <div className="mb-3">
+
+                                    <label>Role</label>
+
+                                    <select
+                                        className="form-control"
+                                        name="role"
+                                        value={formData.role}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="JOB_SEEKER">
+                                            Job Seeker
+                                        </option>
+
+                                        <option value="RECRUITER">
+                                            Recruiter
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
                                 <button
-                                    className="btn btn-success w-100">
-
+                                    type="submit"
+                                    className="btn btn-success w-100"
+                                >
                                     Register
-
                                 </button>
 
                             </form>
@@ -139,10 +156,9 @@ function Register() {
 
                                 <Link
                                     to="/login"
-                                    className="ms-2">
-
+                                    className="ms-2"
+                                >
                                     Login
-
                                 </Link>
 
                             </div>

@@ -10,6 +10,7 @@ import com.santhosh.jobportal.model.User;
 import com.santhosh.jobportal.repository.ApplicationRepository;
 import com.santhosh.jobportal.repository.JobRepository;
 import com.santhosh.jobportal.repository.UserRepository;
+import com.santhosh.jobportal.specification.JobSpecification;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -280,7 +281,6 @@ public class JobService {
             String jobType,
             Pageable pageable) {
 
-        // Convert empty strings to null
         if (keyword != null && keyword.isBlank()) {
             keyword = null;
         }
@@ -293,19 +293,14 @@ public class JobService {
             jobType = null;
         }
 
-        // Fetch filtered jobs from repository
-        Page<Job> jobs = jobRepository.searchJobs(
-                keyword,
-                location,
-                jobType,
+        Page<Job> jobs = jobRepository.findAll(
+                JobSpecification.searchJobs(keyword, location, jobType),
                 pageable
         );
 
-        // Convert Entity -> DTO
         return jobs.map(job ->
                 modelMapper.map(job, JobResponseDTO.class)
         );
-
     }
 
     public Page<Job> getJobs(Pageable pageable){

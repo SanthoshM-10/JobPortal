@@ -217,8 +217,4 @@ public class JobController {
         Page<Job> jobs = jobService.getJobs(pageable);
         return new ResponseEntity<>(jobs, HttpStatus.OK);
     }
-
-
-
-
 }

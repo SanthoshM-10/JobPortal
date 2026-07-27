@@ -33,6 +33,8 @@ public class AuthService {
 
     public RegisterResponse register(RegisterRequest request) {
 
+
+
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
@@ -44,7 +46,11 @@ public class AuthService {
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        user.setRole("JOB_SEEKER");
+        if (request.getRole() == null || request.getRole().isBlank()) {
+            user.setRole("JOB_SEEKER");
+        } else {
+            user.setRole(request.getRole().toUpperCase());
+        }
 
         User savedUser = userRepository.save(user);
 
