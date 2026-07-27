@@ -97,10 +97,10 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // ===================== JOB APIs =====================
-
-                        // View jobs
+                        
+                        // View jobs (Public)
                         .requestMatchers(HttpMethod.GET, "/jobs/**")
-                        .hasAnyRole("JOB_SEEKER", "RECRUITER", "ADMIN")
+                        .permitAll()
 
                         // Add jobs
                         .requestMatchers(HttpMethod.POST, "/jobs/**")
