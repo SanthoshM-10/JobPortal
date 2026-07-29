@@ -66,38 +66,35 @@ function Profile() {
 
     const loadProfileImage = async () => {
 
-        try {
+    try {
 
-            const response = await getMyProfileImage();
+        const response = await getMyProfileImage();
 
-            if (response.data) {
+        if (response.data) {
 
-                setImageName(response.data);
+            const imageResponse = await getProfileImage(response.data);
 
-                const imageResponse =
-                    await getProfileImage(response.data);
+            const blob = new Blob([imageResponse.data]);
 
-                const blob = new Blob([imageResponse.data]);
+            const url = URL.createObjectURL(blob);
 
-                const url = URL.createObjectURL(blob);
+            setImageUrl(url);
 
-                setImageUrl(url);
+        } else {
 
-            }
-
-        } catch (error) {
-
-            console.error(error);
-
-            toast.error(
-                error.response?.data?.message ||
-                error.response?.data ||
-                "Failed to load profile image."
-            );
+            setImageUrl("");
 
         }
 
-    };
+    } catch (error) {
+
+        console.log("No profile image found");
+
+        setImageUrl("");
+
+    }
+
+};
 
     const handleChange = (e) => {
 

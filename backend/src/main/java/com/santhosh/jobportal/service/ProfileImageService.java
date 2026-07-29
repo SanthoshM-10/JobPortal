@@ -85,7 +85,7 @@ public class ProfileImageService {
         File file = new File(UPLOAD_DIR + filename);
 
         if (!file.exists()) {
-            throw new RuntimeException("Profile image not found.");
+            return ResponseEntity.notFound().build();
         }
 
         Resource resource = new FileSystemResource(file);
@@ -95,7 +95,6 @@ public class ProfileImageService {
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         "inline; filename=\"" + filename + "\"")
                 .body(resource);
-
     }
 
 }
