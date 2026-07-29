@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getDashboard } from "../services/dashboardService";
+import { toast } from "react-toastify";
 
 function Dashboard() {
 
@@ -24,7 +25,11 @@ function Dashboard() {
 
             console.error(error);
 
-            alert("Failed to load dashboard.");
+            toast.error(
+                error.response?.data?.message ||
+                error.response?.data ||
+                "Failed to load dashboard."
+            );
 
         } finally {
 
@@ -59,9 +64,17 @@ function Dashboard() {
 
     <div className="container mt-4">
 
-        <h2 className="mb-4 fw-bold">
-            Recruiter Dashboard
-        </h2>
+        <div className="dashboard-header mb-5">
+
+            <h2 className="fw-bold">
+                Recruiter Dashboard 📊
+            </h2>
+
+            <p className="text-light mb-0">
+                Monitor your jobs, applicants and hiring progress in one place.
+            </p>
+
+        </div>
 
         <div className="row g-4">
 
@@ -134,9 +147,9 @@ function Dashboard() {
 
                     (
 
-                        <table className="table table-hover shadow">
+                        <table className="table table-hover dashboard-table">
 
-                            <thead className="table-dark">
+                            <thead className="table-primary">
 
                             <tr>
 
@@ -173,7 +186,7 @@ function Dashboard() {
 
                                         <td>
 
-                                            <span className="badge bg-primary">
+                                            <span className="badge rounded-pill bg-primary px-3 py-2">
 
                                                 {job.applicants}
 
@@ -207,17 +220,17 @@ function DashboardCard({ title, value, color }) {
 
     return (
 
-        <div className="col-lg-3 col-md-6">
+        <div className="col-xl-3 col-lg-4 col-md-6">
 
-            <div className={`card border-${color} shadow`}>
+            <div className={`dashboard-card border-start border-5 border-${color}`}>
 
-                <div className="card-body text-center">
+                <div className="card-body">
 
-                    <h5 className={`text-${color}`}>
+                    <h6 className="text-muted mb-2">
                         {title}
-                    </h5>
+                    </h6>
 
-                    <h2 className="fw-bold">
+                    <h2 className={`fw-bold text-${color}`}>
                         {value}
                     </h2>
 

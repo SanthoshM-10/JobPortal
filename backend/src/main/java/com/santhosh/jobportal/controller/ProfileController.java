@@ -19,7 +19,6 @@ public class ProfileController {
     @GetMapping("/me")
     public ResponseEntity<ProfileResponse> getMyProfile(
             Authentication authentication) {
-        System.out.println("===== PROFILE CONTROLLER HIT =====");
 
         return ResponseEntity.ok(
                 profileService.getMyProfile(authentication)

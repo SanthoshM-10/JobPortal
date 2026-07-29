@@ -7,6 +7,8 @@ import {
     getProfileImage
 } from "../services/ProfileImageService";
 
+import { toast } from "react-toastify";
+
 function Navbar() {
 
     const navigate = useNavigate();
@@ -20,10 +22,8 @@ function Navbar() {
     useEffect(() => {
 
         if (token) {
-
             loadProfile();
             loadProfileImage();
-
         }
 
     }, [token]);
@@ -33,7 +33,6 @@ function Navbar() {
         try {
 
             const response = await getMyProfile();
-
             setProfile(response.data);
 
         } catch (error) {
@@ -52,14 +51,11 @@ function Navbar() {
 
             if (response.data) {
 
-                const imageResponse =
-                    await getProfileImage(response.data);
+                const imageResponse = await getProfileImage(response.data);
 
-                const blob =
-                    new Blob([imageResponse.data]);
+                const blob = new Blob([imageResponse.data]);
 
-                const url =
-                    URL.createObjectURL(blob);
+                const url = URL.createObjectURL(blob);
 
                 setImageUrl(url);
 
@@ -80,21 +76,27 @@ function Navbar() {
         localStorage.removeItem("name");
         localStorage.removeItem("email");
 
-        navigate("/login");
+        toast.success("Logged out successfully!");
+
+        setTimeout(() => {
+
+            navigate("/login");
+
+        }, 1000);
 
     };
 
     return (
 
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav className="navbar navbar-expand-lg custom-navbar shadow-sm">
 
             <div className="container">
 
                 <Link
-                    className="navbar-brand fw-bold"
+                    className="navbar-brand brand-logo fw-bold"
                     to="/"
                 >
-                    Job Portal
+                    💼 JobPortal
                 </Link>
 
                 <button
@@ -111,15 +113,14 @@ function Navbar() {
                     id="navbarNav"
                 >
 
-                    <div className="navbar-nav ms-auto align-items-center">
+                    <div className="navbar-nav ms-auto align-items-center gap-2">
 
                         <Link
-                            className="nav-link"
+                            className="nav-link custom-link"
                             to="/"
                         >
                             Home
                         </Link>
-                        
 
                         {
 
@@ -128,14 +129,14 @@ function Navbar() {
                                 <>
 
                                     <Link
-                                        className="nav-link"
+                                        className="nav-link custom-link"
                                         to="/login"
                                     >
                                         Login
                                     </Link>
 
                                     <Link
-                                        className="nav-link"
+                                        className="nav-link custom-link"
                                         to="/register"
                                     >
                                         Register
@@ -154,21 +155,21 @@ function Navbar() {
                                         <>
 
                                             <Link
-                                                className="nav-link"
+                                                className="nav-link custom-link"
                                                 to="/dashboard"
                                             >
                                                 Dashboard
                                             </Link>
 
                                             <Link
-                                                className="nav-link"
+                                                className="nav-link custom-link"
                                                 to="/add-job"
                                             >
                                                 Add Job
                                             </Link>
 
                                             <Link
-                                                className="nav-link"
+                                                className="nav-link custom-link"
                                                 to="/my-jobs"
                                             >
                                                 My Jobs
@@ -178,8 +179,6 @@ function Navbar() {
 
                                     }
 
-                                    
-
                                     {
 
                                         role === "JOB_SEEKER" &&
@@ -187,21 +186,21 @@ function Navbar() {
                                         <>
 
                                             <Link
-                                                className="nav-link"
+                                                className="nav-link custom-link"
                                                 to="/my-applications"
                                             >
                                                 My Applications
                                             </Link>
 
                                             <Link
-                                                className="nav-link"
+                                                className="nav-link custom-link"
                                                 to="/saved-jobs"
                                             >
                                                 ❤️ Saved Jobs
                                             </Link>
 
                                             <Link
-                                                className="nav-link"
+                                                className="nav-link custom-link"
                                                 to="/upload-resume"
                                             >
                                                 Upload Resume
@@ -212,114 +211,138 @@ function Navbar() {
                                     }
 
                                     {
-
                                         role === "ADMIN" &&
-
                                         <Link
-                                            className="nav-link"
-                                            to="/add-job"
-                                        >
-                                            Add Job
-                                        </Link>
+    className="nav-link custom-link"
+    to="/add-job"
+>
+    Add Job
+</Link>
 
-                                    }
+}
 
-                                    <Link
-                                        className="nav-link"
-                                        to="/profile"
-                                    >
-                                        My Profile
-                                    </Link>
+<Link
+    className="nav-link custom-link"
+    to="/profile"
+>
+    My Profile
+</Link>
 
-                                    <div className="dropdown ms-3">
+<div className="dropdown ms-3">
 
-                                        <button
-                                            className="btn btn-dark dropdown-toggle d-flex align-items-center"
-                                            data-bs-toggle="dropdown"
-                                        >
+    <button
+        className="btn profile-btn dropdown-toggle d-flex align-items-center"
+        data-bs-toggle="dropdown"
+    >
 
-                                            <img
-                                                src={
-                                                    imageUrl ||
-                                                    "https://via.placeholder.com/40"
-                                                }
-                                                alt="Profile"
-                                                width="40"
-                                                height="40"
-                                                className="rounded-circle me-2"
-                                                style={{
-                                                    objectFit: "cover"
-                                                }}
-                                            />
+        <img
+            src={
+                imageUrl ||
+                "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+            }
+            alt="Profile"
+            width="42"
+            height="42"
+            className="rounded-circle me-2"
+            style={{
+                objectFit: "cover",
+                border: "2px solid white"
+            }}
+        />
 
-                                            {
+        <span className="fw-semibold">
 
-                                                profile
-                                                    ? profile.name
-                                                    : "User"
+            {
 
-                                            }
+                profile
+                    ? profile.name
+                    : "User"
 
-                                        </button>
+            }
 
-                                        <ul className="dropdown-menu dropdown-menu-end">
+        </span>
 
-                                            <li>
+    </button>
 
-                                                <Link
-                                                    className="dropdown-item"
-                                                    to="/profile"
-                                                >
-                                                    My Profile
-                                                </Link>
+    <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4">
 
-                                            </li>
+        <li>
 
-                                            {
+            <Link
+                className="dropdown-item"
+                to="/profile"
+            >
+                👤 My Profile
+            </Link>
 
-                                                role === "JOB_SEEKER" &&
+        </li>
 
-                                                <li>
+        {
 
-                                                    <Link
-                                                        className="dropdown-item"
-                                                        to="/upload-resume"
-                                                    >
-                                                        Upload Resume
-                                                    </Link>
+            role === "JOB_SEEKER" &&
 
-                                                </li>
+            <li>
 
-                                            }
+                <Link
+                    className="dropdown-item"
+                    to="/upload-resume"
+                >
+                    📄 Upload Resume
+                </Link>
 
-                                            <li>
+            </li>
 
-                                                <button
-                                                    className="dropdown-item text-danger"
-                                                    onClick={handleLogout}
-                                                >
-                                                    Logout
-                                                </button>
+        }
 
-                                            </li>
+        {
 
-                                        </ul>
+            role === "RECRUITER" &&
 
-                                    </div>
+            <li>
 
-                                </>
+                <Link
+                    className="dropdown-item"
+                    to="/dashboard"
+                >
+                    📊 Dashboard
+                </Link>
 
-                        }
+            </li>
 
-                    </div>
+        }
 
-                </div>
+        <li>
+            <hr className="dropdown-divider" />
+        </li>
 
-            </div>
+        <li>
 
-        </nav>
+            <button
+                className="dropdown-item text-danger fw-semibold"
+                onClick={handleLogout}
+            >
+                🚪 Logout
+            </button>
 
-    );
+        </li>
+
+    </ul>
+
+</div>
+
+</>
+
+}
+
+</div>
+
+</div>
+
+</div>
+
+</nav>
+
+);
 
 }
 

@@ -135,46 +135,39 @@ public class ApplicationService {
 
         application.setStatus(request.getStatus());
 
-        Application saved = applicationRepository.save(application);
+        Application updatedApplication = applicationRepository.save(application);
 
         ApplicationResponse response = new ApplicationResponse();
-
-        response.setApplicationId(saved.getId());
-        response.setJobId(saved.getJob().getId());
-        response.setJobTitle(saved.getJob().getTitle());
-        response.setCompany(saved.getJob().getCompany());
-        response.setStatus(saved.getStatus());
-        response.setAppliedDate(saved.getAppliedDate());
-
+        response.setApplicationId(updatedApplication.getId());
+        response.setJobId(updatedApplication.getJob().getId());
+        response.setJobTitle(updatedApplication.getJob().getTitle());
+        response.setCompany(updatedApplication.getJob().getCompany());
+        response.setStatus(updatedApplication.getStatus());
+        response.setAppliedDate(updatedApplication.getAppliedDate());
 
         String subject = "Job Application Status Updated";
 
         String body =
-                "Hello " + saved.getUser().getName() + ",\n\n" +
+                "Hello " + updatedApplication.getUser().getName() + ",\n\n" +
                         "Your application for the position '" +
-                        saved.getJob().getTitle() +
+                        updatedApplication.getJob().getTitle() +
                         "' at " +
-                        saved.getJob().getCompany() +
+                        updatedApplication.getJob().getCompany() +
                         " has been updated.\n\n" +
-
-                        "Current Status : " + saved.getStatus() + "\n\n" +
-
+                        "Current Status : " + updatedApplication.getStatus() + "\n\n" +
                         "Thank you for using Job Portal.\n\n" +
-
                         "Regards,\nRecruitment Team";
 
         try {
-
             emailService.sendEmail(
-                    saved.getUser().getEmail(),
+                    updatedApplication.getUser().getEmail(),
                     subject,
                     body
             );
-
+            System.out.println("Email sent successfully.");
         } catch (Exception e) {
-
-            System.out.println("Email sending failed: " + e.getMessage());
-
+            System.out.println("Email sending failed.");
+            e.printStackTrace();
         }
 
         return response;

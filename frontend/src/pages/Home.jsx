@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import JobCard from "../components/JobCard";
-import { getAllJobs, searchJobs } from "../services/jobService";
+import { searchJobs } from "../services/jobService";
 import { getMyApplications } from "../services/applicationService";
+import { toast } from "react-toastify";
 
 function Home() {
 
@@ -79,6 +80,12 @@ function Home() {
 
             console.error(error);
 
+            toast.error(
+                error.response?.data?.message ||
+                error.response?.data ||
+                "Failed to load jobs."
+            );
+
         } finally {
 
             setLoading(false);
@@ -93,17 +100,22 @@ function Home() {
 
         const response = await getMyApplications();
 
-        console.log("Applications:", response.data);
 
         const ids = response.data.map(app => app.jobId);
 
-        console.log("IDs:", ids);
 
         setAppliedJobs(ids);
 
     } catch (error) {
 
         console.error(error);
+
+        toast.error(
+            error.response?.data?.message ||
+            error.response?.data ||
+            "Failed to load your applications."
+        );
+
 
     }
 
@@ -129,6 +141,12 @@ function Home() {
         } catch (error) {
 
             console.error(error);
+
+            toast.error(
+                error.response?.data?.message ||
+                error.response?.data ||
+                "Search failed."
+            );
 
         } finally {
 
@@ -186,28 +204,23 @@ function Home() {
     }
 
         return (
+            <div className="container mt-4">
 
-        <div className="container mt-4">
+            <div className="hero-section text-center mb-5">
 
-            <div className="text-center mb-4">
-
-                <h1 className="fw-bold">
-
-                    Job Portal
-
+                <h1 className="display-4 fw-bold">
+                    Find Your Dream Job
                 </h1>
 
-                <p className="text-muted">
-
-                    Find your dream job here.
-
+                <p className="lead text-muted mt-3">
+                    Explore thousands of opportunities from top companies across India.
                 </p>
 
             </div>
 
             {/* Search Filters */}
 
-            <div className="card shadow-sm p-4 mb-4">
+            <div className="card search-card p-4 mb-5">
 
                 <div className="row g-3">
 
@@ -216,7 +229,7 @@ function Home() {
                         <input
                             type="text"
                             className="form-control"
-                            placeholder="Search jobs..."
+                            placeholder="Search by title, company or skill..."
                             value={keyword}
                             onChange={(e) => {
 

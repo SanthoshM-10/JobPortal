@@ -10,6 +10,8 @@ import {
     checkSavedJob
 } from "../services/savedJobService";
 
+import { toast } from "react-toastify";
+
 function JobCard({ job, appliedJobs }) {
 
     const role = localStorage.getItem("role");
@@ -29,9 +31,7 @@ function JobCard({ job, appliedJobs }) {
 
 }, [job.id]);
 
-    console.log("Current Job ID:", job.id);
-    console.log("Applied Jobs:", appliedJobs);
-    console.log("Applied:", applied);
+
 
     const handleDelete = async () => {
 
@@ -45,7 +45,7 @@ function JobCard({ job, appliedJobs }) {
 
             await deleteJob(job.id);
 
-            alert("Job deleted successfully!");
+            toast.success("Job deleted successfully!");
 
             window.location.reload();
 
@@ -53,7 +53,7 @@ function JobCard({ job, appliedJobs }) {
 
             console.error(error);
 
-            alert(
+            toast.error(
                 error.response?.data?.message ||
                 "Unable to delete job."
             );
@@ -68,7 +68,7 @@ function JobCard({ job, appliedJobs }) {
 
             await applyJob(job.id);
 
-            alert("Applied Successfully!");
+            toast.success("Applied Successfully!");
 
             // Reload to refresh appliedJobs list
             window.location.reload();
@@ -77,7 +77,7 @@ function JobCard({ job, appliedJobs }) {
 
             console.error(error);
 
-            alert(
+            toast.error(
                 error.response?.data?.message ||
                 "Application Failed"
             );
@@ -124,7 +124,7 @@ const handleSaveJob = async () => {
 
         console.error(error);
 
-        alert(
+        toast.error(
             error.response?.data?.message ||
             "Unable to save job."
         );
@@ -135,47 +135,47 @@ const handleSaveJob = async () => {
 
     return (
 
-        <div className="card shadow-sm h-100">
+        <div className="card job-card h-100 border-0">
 
             <div className="card-body">
 
-                <h4 className="card-title text-primary">
-                    {job.title}
-                </h4>
+                <div className="d-flex justify-content-between align-items-start mb-3">
 
-                <h6 className="text-muted">
-                    {job.company}
-                </h6>
+    <div>
 
-                <hr />
+        <h4 className="job-title">
+            {job.title}
+        </h4>
 
-                <p>
-                    <strong>Location:</strong> {job.location}
-                </p>
+        <h6 className="company-name">
+            🏢 {job.company}
+        </h6>
 
-                <p>
-                    <strong>Experience:</strong> {job.experience} Years
-                </p>
+    </div>
 
-                <p>
-                    <strong>Salary:</strong> ₹{job.salary}
-                </p>
+    <span className="badge bg-primary rounded-pill px-3 py-2">
+        {job.jobType}
+    </span>
 
-                <p>
-                    <strong>Job Type:</strong> {job.jobType}
-                </p>
+</div>
 
-                <p>
-                    <strong>Skills:</strong> {job.skills}
-                </p>
+                <div className="job-info">
 
-                <p>
-                    <strong>Description:</strong>
-                    <br />
-                    {job.description}
-                </p>
+    <p>📍 <strong>Location:</strong> {job.location}</p>
 
-                <div className="d-flex flex-wrap gap-2 mt-3">
+    <p>💼 <strong>Experience:</strong> {job.experience} Years</p>
+
+    <p>💰 <strong>Salary:</strong> ₹{job.salary}</p>
+
+    <p>🛠 <strong>Skills:</strong> {job.skills}</p>
+
+    <p className="mt-3">
+        {job.description}
+    </p>
+
+</div>
+
+                <div className="d-flex flex-wrap gap-2 mt-4">
 
                     <Link
                         to={`/jobs/${job.id}`}

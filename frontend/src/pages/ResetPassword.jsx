@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { resetPassword } from "../services/authService";
+import { toast } from "react-toastify";
 
 function ResetPassword() {
 
@@ -20,7 +21,7 @@ function ResetPassword() {
 
         if (!newPassword || !confirmPassword) {
 
-            alert("Please fill all fields.");
+            toast.warning("Please fill all fields.");
 
             return;
 
@@ -28,7 +29,7 @@ function ResetPassword() {
 
         if (newPassword !== confirmPassword) {
 
-            alert("Passwords do not match.");
+            toast.warning("Passwords do not match.");
 
             return;
 
@@ -36,7 +37,7 @@ function ResetPassword() {
 
         if (newPassword.length < 5) {
 
-            alert("Password must be at least 5 characters.");
+            toast.warning("Password must be at least 5 characters.");
 
             return;
 
@@ -51,15 +52,20 @@ function ResetPassword() {
                 newPassword
             );
 
-            alert(response.data);
+            toast.success(response.data);
 
-            navigate("/login");
+            setTimeout(() => {
+
+                navigate("/login");
+
+            }, 1000);
 
         } catch (error) {
 
             console.error(error);
 
-            alert(
+            toast.error(
+                error.response?.data?.message ||
                 error.response?.data ||
                 "Password reset failed."
             );
@@ -74,39 +80,66 @@ function ResetPassword() {
 
     return (
 
-        <div className="container mt-5">
+    <div
+        className="container py-5 d-flex justify-content-center align-items-center"
+        style={{ minHeight: "80vh" }}
+    >
+
+        <div
+            className="card border-0 shadow-lg rounded-4 overflow-hidden"
+            style={{ maxWidth: "500px", width: "100%" }}
+        >
 
             <div
-                className="card shadow p-4 mx-auto"
-                style={{ maxWidth: "500px" }}
+                className="text-center text-white py-4"
+                style={{
+                    background: "linear-gradient(135deg,#16a34a,#15803d)"
+                }}
             >
 
-                <h2 className="text-center mb-4">
+                <h2 className="fw-bold mb-2">
+
                     Reset Password
+
                 </h2>
 
-                <div className="alert alert-info">
+                <p className="mb-0 opacity-75">
 
-                    Reset password for
+                    Create a strong new password for your account.
 
-                    <strong>
-                        {" "}
+                </p>
+
+            </div>
+
+            <div className="card-body p-4">
+
+                <div className="alert alert-info rounded-3">
+
+                    <strong>Account</strong>
+
+                    <br />
+
+                    <span className="fw-semibold">
+
                         {email}
-                    </strong>
+
+                    </span>
 
                 </div>
 
                 <form onSubmit={handleSubmit}>
 
-                    <div className="mb-3">
+                    <div className="mb-4">
 
-                        <label className="form-label">
+                        <label className="form-label fw-semibold">
+
                             New Password
+
                         </label>
 
                         <input
                             type="password"
-                            className="form-control"
+                            className="form-control rounded-3"
                             placeholder="Enter new password"
                             value={newPassword}
                             onChange={(e) =>
@@ -117,16 +150,18 @@ function ResetPassword() {
 
                     </div>
 
-                    <div className="mb-3">
+                    <div className="mb-4">
 
-                        <label className="form-label">
+                        <label className="form-label fw-semibold">
+
                             Confirm Password
+
                         </label>
 
                         <input
                             type="password"
-                            className="form-control"
-                            placeholder="Confirm password"
+                            className="form-control rounded-3"
+                            placeholder="Confirm your password"
                             value={confirmPassword}
                             onChange={(e) =>
                                 setConfirmPassword(e.target.value)
@@ -136,21 +171,41 @@ function ResetPassword() {
 
                     </div>
 
-                    <button
-                        type="submit"
-                        className="btn btn-success w-100"
-                        disabled={loading}
-                    >
+                    <div className="alert alert-light border rounded-3">
 
-                        {
+                        <small className="text-muted">
 
-                            loading
-                                ? "Updating Password..."
-                                : "Reset Password"
+                            Password must be at least <strong>5 characters</strong> long.
 
-                        }
+                        </small>
 
-                    </button>
+                    </div>
+
+                    <div className="d-grid">
+
+                        <button
+                            type="submit"
+                            className="btn btn-success btn-lg rounded-3"
+                            disabled={loading}
+                        >
+
+                            {
+
+                                loading
+
+                                    ?
+
+                                    "Updating Password..."
+
+                                    :
+
+                                    "Reset Password"
+
+                            }
+
+                        </button>
+
+                    </div>
 
                 </form>
 
@@ -158,7 +213,9 @@ function ResetPassword() {
 
         </div>
 
-    );
+    </div>
+
+);
 
 }
 

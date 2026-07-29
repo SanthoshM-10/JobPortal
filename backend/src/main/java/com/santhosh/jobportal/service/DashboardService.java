@@ -13,7 +13,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -25,55 +27,65 @@ public class DashboardService {
 
     public DashboardResponse getDashboard() {
 
+        long totalStart = System.currentTimeMillis();
+
+        long start = System.currentTimeMillis();
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
-
         String email = authentication.getName();
 
-        User recruiter = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("Recruiter not found"));
 
+        start = System.currentTimeMillis();
+        User recruiter = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Recruiter not found"));
+
+
+        start = System.currentTimeMillis();
         List<Job> jobs = jobRepository.findByRecruiter(recruiter);
+
 
         long totalJobs = jobs.size();
 
-        long totalApplicants = 0;
+        start = System.currentTimeMillis();
+        List<Application> applications = applicationRepository.findByJobIn(jobs);
+
+
+        long totalApplicants = applications.size();
+
+        start = System.currentTimeMillis();
+
         long applied = 0;
         long shortlisted = 0;
+        long interview = 0;
         long selected = 0;
         long rejected = 0;
-        long interview = 0;
 
-        for (Job job : jobs) {
+        Map<Integer, Long> applicantCountMap = new HashMap<>();
 
-            List<Application> applications =
-                    applicationRepository.findByJob(job);
+        for (Application application : applications) {
 
-            totalApplicants += applications.size();
+            int jobId = application.getJob().getId();
 
-            for (Application application : applications) {
+            applicantCountMap.put(
+                    jobId,
+                    applicantCountMap.getOrDefault(jobId, 0L) + 1
+            );
 
-                switch (application.getStatus()) {
-
-                    case APPLIED -> applied++;
-
-                    case SHORTLISTED -> shortlisted++;
-
-                    case INTERVIEW -> interview++;
-
-                    case SELECTED -> selected++;
-
-                    case REJECTED -> rejected++;
-                }
-
+            switch (application.getStatus()) {
+                case APPLIED -> applied++;
+                case SHORTLISTED -> shortlisted++;
+                case INTERVIEW -> interview++;
+                case SELECTED -> selected++;
+                case REJECTED -> rejected++;
             }
-
         }
 
-        // Recent Jobs
+
+        start = System.currentTimeMillis();
         List<Job> recentJobs =
                 jobRepository.findTop5ByRecruiterOrderByPostedDateDesc(recruiter);
+
+        start = System.currentTimeMillis();
 
         List<RecentJobResponse> recent = recentJobs.stream()
                 .map(job -> {
@@ -83,15 +95,12 @@ public class DashboardService {
                     dto.setId(job.getId());
                     dto.setTitle(job.getTitle());
                     dto.setCompany(job.getCompany());
-
-                    dto.setApplicants(
-                            (long) applicationRepository.findByJob(job).size()
-                    );
+                    dto.setApplicants(applicantCountMap.getOrDefault(job.getId(), 0L));
 
                     return dto;
-
                 })
                 .toList();
+
 
         DashboardResponse response = new DashboardResponse();
 
@@ -102,14 +111,8 @@ public class DashboardService {
         response.setInterview(interview);
         response.setSelected(selected);
         response.setRejected(rejected);
-
-        System.out.println("Recent Jobs Count: " + recent.size());
-
-        for (RecentJobResponse job : recent) {
-            System.out.println(job.getTitle());
-        }
-
         response.setRecentJobs(recent);
+
 
         return response;
     }

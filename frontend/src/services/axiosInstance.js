@@ -1,13 +1,11 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: "https://jobportal-1-lgqt.onrender.com",
+    baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
 axiosInstance.interceptors.request.use(
-
     (config) => {
-
         const token = localStorage.getItem("token");
 
         if (token) {
@@ -16,9 +14,7 @@ axiosInstance.interceptors.request.use(
 
         return config;
     },
-
     (error) => Promise.reject(error)
-
 );
 
 export default axiosInstance;

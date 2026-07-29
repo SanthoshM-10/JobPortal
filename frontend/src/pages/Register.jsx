@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register } from "../services/authService";
+import { toast } from "react-toastify";
 
 function Register() {
 
@@ -12,6 +13,8 @@ function Register() {
         password: "",
         role: "JOB_SEEKER"
     });
+
+    const [loading, setLoading] = useState(false);
 
     const [error, setError] = useState("");
 
@@ -28,22 +31,43 @@ function Register() {
 
         e.preventDefault();
 
+        setError("");
+
         try {
+
+            setLoading(true);
 
             await register(formData);
 
-            alert("Registration Successful!");
+            toast.success("Registration Successful!");
 
-            navigate("/login");
+            setTimeout(() => {
+
+                toast.info("Redirecting to login page...");
+
+                navigate("/login");
+
+            }, 1000);
 
         } catch (err) {
 
-            console.log(err);
+            console.error(err);
 
             setError(
                 err.response?.data?.message ||
+                err.response?.data ||
                 "Registration Failed"
             );
+
+            toast.error(
+                err.response?.data?.message ||
+                err.response?.data ||
+                "Registration Failed"
+            );
+
+        } finally {
+
+            setLoading(false);
 
         }
 
@@ -51,119 +75,192 @@ function Register() {
 
     return (
 
-        <div className="container mt-5">
+        <div
+            className="container py-5 d-flex justify-content-center align-items-center"
+            style={{ minHeight: "90vh" }}
+        >
 
-            <div className="row justify-content-center">
+            <div
+                className="card border-0 shadow-lg rounded-4 overflow-hidden"
+                style={{ maxWidth: "650px", width: "100%" }}
+            >
 
-                <div className="col-md-5">
+                <div
+                    className="text-center text-white py-4"
+                    style={{
+                        background: "linear-gradient(135deg,#2563eb,#1e40af)"
+                    }}
+                >
 
-                    <div className="card shadow">
+                    <h2 className="fw-bold mb-2">
+                        Create Account
+                    </h2>
 
-                        <div className="card-body">
+                    <p className="mb-0 opacity-75">
+                        Join our Job Portal and start your career journey.
+                    </p>
 
-                            <h2 className="text-center mb-4">
-                                Register
-                            </h2>
+                </div>
 
-                            {
-                                error &&
-                                <div className="alert alert-danger">
-                                    {error}
-                                </div>
-                            }
+                <div className="card-body p-4">
 
-                            <form onSubmit={handleSubmit}>
+                    {
 
-                                <div className="mb-3">
+                        error &&
 
-                                    <label>Name</label>
+                        <div className="alert alert-danger">
 
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        required
-                                    />
+                            {error}
 
-                                </div>
+                        </div>
 
-                                <div className="mb-3">
+                    }
 
-                                    <label>Email</label>
+                    <form onSubmit={handleSubmit}>
 
-                                    <input
-                                        type="email"
-                                        className="form-control"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        required
-                                    />
+                        <div className="row">
 
-                                </div>
+                            <div className="col-md-6 mb-4">
 
-                                <div className="mb-3">
+                                <label className="form-label fw-semibold">
 
-                                    <label>Password</label>
+                                    Full Name
 
-                                    <input
-                                        type="password"
-                                        className="form-control"
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        required
-                                    />
+                                </label>
 
-                                </div>
+                                <input
+                                    type="text"
+                                    className="form-control rounded-3"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    placeholder="Enter your full name"
+                                    required
+                                />
 
-                                <div className="mb-3">
+                            </div>
 
-                                    <label>Role</label>
+                            <div className="col-md-6 mb-4">
 
-                                    <select
-                                        className="form-control"
-                                        name="role"
-                                        value={formData.role}
-                                        onChange={handleChange}
-                                    >
-                                        <option value="JOB_SEEKER">
-                                            Job Seeker
-                                        </option>
+                                <label className="form-label fw-semibold">
 
-                                        <option value="RECRUITER">
-                                            Recruiter
-                                        </option>
+                                    Email Address
 
-                                    </select>
+                                </label>
 
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    className="btn btn-success w-100"
-                                >
-                                    Register
-                                </button>
-
-                            </form>
-
-                            <div className="text-center mt-3">
-
-                                Already have an account?
-
-                                <Link
-                                    to="/login"
-                                    className="ms-2"
-                                >
-                                    Login
-                                </Link>
+                                <input
+                                    type="email"
+                                    className="form-control rounded-3"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    placeholder="Enter your email"
+                                    required
+                                />
 
                             </div>
 
                         </div>
+
+                        <div className="row">
+
+                            <div className="col-md-6 mb-4">
+
+                                <label className="form-label fw-semibold">
+
+                                    Password
+
+                                </label>
+
+                                <input
+                                    type="password"
+                                    className="form-control rounded-3"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    placeholder="Create a password"
+                                    required
+                                />
+
+                            </div>
+
+                            <div className="col-md-6 mb-4">
+
+                                <label className="form-label fw-semibold">
+
+                                    Role
+
+                                </label>
+
+                                <select
+                                    className="form-select rounded-3"
+                                    name="role"
+                                    value={formData.role}
+                                    onChange={handleChange}
+                                >
+
+                                    <option value="JOB_SEEKER">
+
+                                        Job Seeker
+
+                                    </option>
+
+                                    <option value="RECRUITER">
+
+                                        Recruiter
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div className="d-grid mt-3">
+
+                            <button
+                                type="submit"
+                                className="btn btn-primary btn-lg rounded-3"
+                                disabled={loading}
+                            >
+
+                                {
+
+                                    loading
+
+                                        ?
+
+                                        "Creating Account..."
+
+                                        :
+
+                                        "Register"
+
+                                }
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                    <div className="text-center mt-4">
+
+                        <span className="text-muted">
+
+                            Already have an account?
+
+                        </span>
+
+                        <Link
+                            to="/login"
+                            className="ms-2 text-decoration-none fw-semibold"
+                        >
+
+                            Login
+
+                        </Link>
 
                     </div>
 

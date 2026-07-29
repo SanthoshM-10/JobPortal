@@ -7,12 +7,19 @@ import {
 } from "../services/applicationService";
 import { toast } from "react-toastify";
 
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 function Applicants() {
 
     const { id } = useParams();
 
     const [applicants, setApplicants] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const [search, setSearch] = useState("");
+
+    const [updatingId, setUpdatingId] = useState(null);
 
     useEffect(() => {
         fetchApplicants();
@@ -30,7 +37,11 @@ function Applicants() {
 
         console.error(error);
 
-        toast.error("Failed to load applicants.");
+        toast.error(
+            error.response?.data?.message ||
+            error.response?.data ||
+            "Failed to load applicants."
+        );
 
     } finally {
 
@@ -42,16 +53,23 @@ function Applicants() {
 
     const updateStatus = async (applicationId, status) => {
 
+    const confirmUpdate = window.confirm(
+        `Change application status to "${status}"?`
+    );
+
+    if (!confirmUpdate) return;
+
     try {
+
+        setUpdatingId(applicationId);
 
         const response = await updateApplicationStatus(
             applicationId,
             status
         );
 
-        // Update the UI immediately
-        setApplicants(prevApplicants =>
-            prevApplicants.map(applicant =>
+        setApplicants(prev =>
+            prev.map(applicant =>
                 applicant.applicationId === applicationId
                     ? {
                           ...applicant,
@@ -61,13 +79,21 @@ function Applicants() {
             )
         );
 
-        toast.success("Status updated successfully!");
+        toast.success(`Application marked as ${status}.`);
 
     } catch (error) {
 
         console.error(error);
 
-        toast.error("Failed to update status.");
+        toast.error(
+            error.response?.data?.message ||
+            error.response?.data ||
+            "Failed to update status."
+        );
+
+    } finally {
+
+        setUpdatingId(null);
 
     }
 
@@ -93,7 +119,11 @@ function Applicants() {
 
             console.error(error);
 
-            toast.error("Unable to open resume.");
+            toast.error(
+            error.response?.data?.message ||
+            error.response?.data ||
+            "Unable to open resume."
+        );
 
         }
 
@@ -126,38 +156,137 @@ function Applicants() {
 
     if (loading) {
 
-        return (
-
-            <div className="container mt-5 text-center">
-
-                <div
-                    className="spinner-border text-primary"
-                    role="status"
-                />
-
-            </div>
-
-        );
-
-    }
-
     return (
 
         <div className="container mt-4">
 
-            <h2 className="mb-4 fw-bold">
-                Applicants
-            </h2>
+            <Skeleton
+                height={40}
+                width={220}
+                className="mb-4"
+            />
 
-            {
+            <table className="table">
 
-                applicants.length === 0 ?
+                <thead>
+
+                    <tr>
+
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Resume</th>
+                        <th>Update Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {[...Array(5)].map((_, index) => (
+
+                        <tr key={index}>
+
+                            <td>
+                                <Skeleton height={20}/>
+                            </td>
+
+                            <td>
+                                <Skeleton height={20}/>
+                            </td>
+
+                            <td>
+                                <Skeleton width={100}/>
+                            </td>
+
+                            <td>
+                                <Skeleton width={120} height={35}/>
+                            </td>
+
+                            <td>
+                                <Skeleton width={170} height={38}/>
+                            </td>
+
+                        </tr>
+
+                    ))}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    );
+
+}
+
+    const filteredApplicants = applicants.filter(applicant =>
+    applicant.name.toLowerCase().includes(search.toLowerCase()) ||
+    applicant.email.toLowerCase().includes(search.toLowerCase())
+);
+
+    return (
+
+    <div className="container py-5">
+
+        <div
+            className="card border-0 shadow-lg rounded-4 overflow-hidden"
+        >
+
+            <div
+                className="text-white p-4"
+                style={{
+                    background: "linear-gradient(135deg,#2563eb,#1e40af)"
+                }}
+            >
+
+                <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center">
+
+                    <div>
+
+                        <h2 className="fw-bold mb-1">
+                            Applicants
+                        </h2>
+
+                        <p className="mb-0 opacity-75">
+                            Total Applicants : {filteredApplicants.length}
+                        </p>
+
+                    </div>
+
+                    <div className="mt-3 mt-lg-0">
+
+                        <input
+                            type="text"
+                            className="form-control rounded-3"
+                            style={{ minWidth: "280px" }}
+                            placeholder="🔍 Search applicant..."
+                            value={search}
+                            onChange={(e)=>setSearch(e.target.value)}
+                        />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div className="card-body">
+
+                {
+                    applicants.length === 0 ?
 
                     (
 
-                        <div className="alert alert-info">
+                        <div className="alert alert-info text-center">
 
-                            No applicants found.
+                            <h5>No Applicants Yet</h5>
+
+                            <p className="mb-0">
+                                Candidates who apply will appear here.
+                            </p>
 
                         </div>
 
@@ -169,70 +298,84 @@ function Applicants() {
 
                         <div className="table-responsive">
 
-                            <table className="table table-hover shadow">
+                            <table className="table align-middle table-hover">
 
-                                <thead className="table-dark">
+                                <thead
+                                    className="table-light"
+                                >
 
-                                <tr>
+                                    <tr>
 
-                                    <th>Name</th>
+                                        <th>Applicant</th>
 
-                                    <th>Email</th>
+                                        <th>Email</th>
 
-                                    <th>Status</th>
+                                        <th>Status</th>
 
-                                    <th>Resume</th>
+                                        <th>Resume</th>
 
-                                    <th>Update Status</th>
+                                        <th width="220">
 
-                                </tr>
+                                            Update Status
+
+                                        </th>
+
+                                    </tr>
 
                                 </thead>
 
                                 <tbody>
 
-                                {
+                                    {
 
-                                    applicants.map(applicant => (
+                                        filteredApplicants.map(applicant => (
 
-                                        <tr
-                                            key={applicant.applicationId}
-                                        >
+                                            <tr
+                                                key={applicant.applicationId}
+                                            >
 
-                                            <td>
+                                                <td>
 
-                                                {applicant.name}
+                                                    <div className="fw-semibold">
 
-                                            </td>
+                                                        {applicant.name}
 
-                                            <td>
+                                                    </div>
 
-                                                {applicant.email}
+                                                </td>
 
-                                            </td>
+                                                <td>
 
-                                            <td>
+                                                    <span className="text-muted">
 
-                                                <span
-                                                    className={`badge ${getBadge(applicant.status)}`}
-                                                >
+                                                        {applicant.email}
 
-                                                    {applicant.status}
+                                                    </span>
 
-                                                </span>
+                                                </td>
 
-                                            </td>
+                                                <td>
 
-                                            <td>
+                                                    <span
+                                                        className={`badge rounded-pill px-3 py-2 ${getBadge(applicant.status)}`}
+                                                    >
 
-                                                {
+                                                        {applicant.status}
 
-                                                    applicant.resumeUrl ?
+                                                    </span>
+
+                                                </td>
+
+                                                <td>
+
+                                                    {
+
+                                                        applicant.resumeUrl ?
 
                                                         (
 
                                                             <button
-                                                                className="btn btn-dark btn-sm"
+                                                                className="btn btn-outline-dark btn-sm rounded-pill"
                                                                 onClick={() =>
                                                                     viewResume(
                                                                         applicant.resumeUrl
@@ -240,7 +383,7 @@ function Applicants() {
                                                                 }
                                                             >
 
-                                                                View Resume
+                                                                📄 View Resume
 
                                                             </button>
 
@@ -258,52 +401,67 @@ function Applicants() {
 
                                                         )
 
-                                                }
-
-                                            </td>
-
-                                            <td>
-
-                                                <select
-                                                    className="form-select form-select-sm"
-                                                    value={applicant.status}
-                                                    onChange={(e) =>
-                                                        updateStatus(
-                                                            applicant.applicationId,
-                                                            e.target.value
-                                                        )
                                                     }
-                                                >
 
-                                                    <option value="APPLIED">
-                                                        Applied
-                                                    </option>
+                                                </td>
 
-                                                    <option value="SHORTLISTED">
-                                                        Shortlisted
-                                                    </option>
+                                                <td>
 
-                                                    <option value="INTERVIEW">
-                                                        Interview
-                                                    </option>
+                                                    <select
+                                                        className="form-select rounded-3"
+                                                        value={applicant.status}
+                                                        disabled={updatingId===applicant.applicationId}
+                                                        onChange={(e)=>
 
-                                                    <option value="SELECTED">
-                                                        Selected
-                                                    </option>
+                                                            updateStatus(
+                                                                applicant.applicationId,
+                                                                e.target.value
+                                                            )
 
-                                                    <option value="REJECTED">
-                                                        Rejected
-                                                    </option>
+                                                        }
+                                                    >
 
-                                                </select>
+                                                        <option value="APPLIED">
+                                                            Applied
+                                                        </option>
 
-                                            </td>
+                                                        <option value="SHORTLISTED">
+                                                            Shortlisted
+                                                        </option>
 
-                                        </tr>
+                                                        <option value="INTERVIEW">
+                                                            Interview
+                                                        </option>
 
-                                    ))
+                                                        <option value="SELECTED">
+                                                            Selected
+                                                        </option>
 
-                                }
+                                                        <option value="REJECTED">
+                                                            Rejected
+                                                        </option>
+
+                                                    </select>
+
+                                                    {
+
+                                                        updatingId===applicant.applicationId &&
+
+                                                        <small className="text-primary">
+
+                                                            Updating...
+
+                                                        </small>
+
+                                                    }
+
+                                                </td>
+
+                                            </tr>
+
+                                        ))
+
+                                    }
 
                                 </tbody>
 
@@ -313,11 +471,15 @@ function Applicants() {
 
                     )
 
-            }
+                }
+
+            </div>
 
         </div>
 
-    );
+    </div>
+
+);
 
 }
 

@@ -5,6 +5,8 @@ import {
     viewResume
 } from "../services/resumeService";
 
+import { toast } from "react-toastify";
+
 function UploadResume() {
 
     const [file, setFile] = useState(null);
@@ -29,7 +31,12 @@ function UploadResume() {
 
         } catch (error) {
 
-            console.error(error);
+            toast.error(
+                error.response?.data?.message ||
+                error.response?.data ||
+                "Failed to load resume."
+            );
+
 
         }
 
@@ -39,7 +46,7 @@ function UploadResume() {
 
         if (!file) {
 
-            alert("Please select a resume.");
+            toast.warning("Please select a resume.");
 
             return;
 
@@ -47,7 +54,7 @@ function UploadResume() {
 
         if (file.type !== "application/pdf") {
 
-            alert("Only PDF files are allowed.");
+            toast.warning("Only PDF files are allowed.");
 
             return;
 
@@ -55,7 +62,7 @@ function UploadResume() {
 
         if (file.size > 5 * 1024 * 1024) {
 
-            alert("Maximum file size is 5 MB.");
+            toast.warning("Maximum file size is 5 MB.");
 
             return;
 
@@ -67,7 +74,7 @@ function UploadResume() {
 
             const response = await uploadResume(file);
 
-            alert("Resume uploaded successfully.");
+            toast.success("Resume uploaded successfully.");
 
             setFile(null);
 
@@ -81,7 +88,11 @@ function UploadResume() {
 
             console.error(error);
 
-            alert("Resume upload failed.");
+            toast.error(
+                error.response?.data?.message ||
+                error.response?.data ||
+                "Resume upload failed."
+            );
 
         } finally {
 
@@ -112,7 +123,11 @@ function UploadResume() {
 
             console.error(error);
 
-            alert("Unable to open resume.");
+            toast.error(
+                error.response?.data?.message ||
+                error.response?.data ||
+                "Unable to open resume."
+            );
 
         }
 
@@ -120,46 +135,82 @@ function UploadResume() {
 
     return (
 
-        <div className="container mt-5">
+    <div
+        className="container py-5"
+        style={{ maxWidth: "750px" }}
+    >
 
-            <div className="card shadow p-4">
+        <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
 
-                <h2 className="mb-4">
+            <div
+                className="text-white text-center py-4"
+                style={{
+                    background: "linear-gradient(135deg,#2563eb,#1e40af)"
+                }}
+            >
+
+                <h2 className="fw-bold mb-2">
                     Upload Resume
                 </h2>
 
+                <p className="mb-0 opacity-75">
+                    Upload your latest resume to apply for jobs faster.
+                </p>
+
+            </div>
+
+            <div className="card-body p-4">
+
                 {
 
-                    resumeName ? (
+                    resumeName ?
 
-                        <div className="alert alert-success">
+                    (
 
-                            <h5>✅ Resume Uploaded</h5>
+                        <div className="alert alert-success rounded-4">
 
-                            <p className="mb-2">
+                            <h5 className="mb-3">
 
-                                <strong>Current Resume:</strong>
+                                ✅ Resume Uploaded Successfully
 
-                            </p>
+                            </h5>
 
-                            <div className="d-flex align-items-center gap-3 flex-wrap">
+                            <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
 
-                                <span>{resumeName}</span>
+                                <div>
+
+                                    <strong>Current Resume</strong>
+
+                                    <br />
+
+                                    <span className="text-muted">
+
+                                        {resumeName}
+
+                                    </span>
+
+                                </div>
 
                                 <button
-                                    className="btn btn-success btn-sm"
+                                    className="btn btn-success rounded-pill px-4"
                                     onClick={handleViewResume}
                                 >
-                                    View Resume
+
+                                    📄 View Resume
+
                                 </button>
 
                             </div>
 
                         </div>
 
-                    ) : (
+                    )
 
-                        <div className="alert alert-warning">
+                    :
+
+                    (
+
+                        <div className="alert alert-warning rounded-4">
 
                             No resume uploaded yet.
 
@@ -169,22 +220,45 @@ function UploadResume() {
 
                 }
 
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    className="form-control mb-3"
-                    accept=".pdf"
-                    onChange={(e) => setFile(e.target.files[0])}
-                />
+                <div className="mb-4">
+
+                    <label className="form-label fw-semibold">
+
+                        Select Resume (PDF Only)
+
+                    </label>
+
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        className="form-control rounded-3"
+                        accept=".pdf"
+                        onChange={(e)=>setFile(e.target.files[0])}
+                    />
+
+                    <small className="text-muted">
+
+                        Maximum file size: 5 MB
+
+                    </small>
+
+                </div>
 
                 {
 
-                    file && (
+                    file &&
 
-                        <div className="mb-3 text-success">
+                    (
 
-                            Selected File:
-                            <strong> {file.name}</strong>
+                        <div
+                            className="alert alert-info rounded-4"
+                        >
+
+                            <strong>Selected File:</strong>
+
+                            <br />
+
+                            {file.name}
 
                         </div>
 
@@ -192,29 +266,47 @@ function UploadResume() {
 
                 }
 
-                <button
-                    className="btn btn-primary"
-                    onClick={handleUpload}
-                    disabled={loading}
-                >
+                <div className="d-grid">
 
-                    {
+                    <button
+                        className="btn btn-primary btn-lg rounded-3"
+                        onClick={handleUpload}
+                        disabled={loading}
+                    >
 
-                        loading
-                            ? "Uploading..."
-                            : resumeName
-                                ? "Replace Resume"
-                                : "Upload Resume"
+                        {
 
-                    }
+                            loading
 
-                </button>
+                            ?
+
+                            "Uploading..."
+
+                            :
+
+                            resumeName
+
+                            ?
+
+                            "Replace Resume"
+
+                            :
+
+                            "Upload Resume"
+
+                        }
+
+                    </button>
+
+                </div>
 
             </div>
 
         </div>
 
-    );
+    </div>
+
+);
 
 }
 

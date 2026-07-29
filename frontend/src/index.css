@@ -8,3 +8,375 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f5f5f5;
 }
+
+/* =========================
+   NAVBAR
+========================= */
+
+.custom-navbar{
+    background:#ffffff;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+    padding:14px 0;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.brand-logo{
+    font-size:28px;
+    font-weight:700;
+    color:#2563eb !important;
+    letter-spacing:.5px;
+}
+
+.custom-link{
+    color:#475569 !important;
+    font-weight:500;
+    padding:10px 18px !important;
+    border-radius:10px;
+    transition:all .3s ease;
+}
+
+.custom-link:hover{
+    background:#eff6ff;
+    color:#2563eb !important;
+    transform:translateY(-2px);
+}
+
+.custom-link.active{
+    background:#2563eb;
+    color:white !important;
+}
+
+.profile-btn{
+    background:#2563eb !important;
+    color:white !important;
+    border:none !important;
+    border-radius:50px !important;
+    padding:8px 18px !important;
+    font-weight:600;
+    transition:.3s;
+}
+
+.profile-btn:hover{
+    background:#1d4ed8 !important;
+}
+
+.profile-btn img{
+    width:42px;
+    height:42px;
+    object-fit:cover;
+    border:2px solid white;
+}
+
+.dropdown-menu{
+    min-width:230px;
+    padding:10px;
+    border:none;
+    border-radius:16px;
+    box-shadow:0 12px 30px rgba(0,0,0,.12);
+}
+
+.dropdown-item{
+    border-radius:10px;
+    padding:12px;
+    transition:.25s;
+}
+
+.dropdown-item:hover{
+    background:#eff6ff;
+    color:#2563eb;
+}
+
+.dropdown-divider{
+    margin:8px 0;
+}
+
+.navbar-toggler{
+    border:none;
+}
+
+.navbar-toggler:focus{
+    box-shadow:none;
+}
+
+@media(max-width:992px){
+
+    .custom-navbar{
+        padding:10px 0;
+    }
+
+    .navbar-nav{
+        margin-top:15px;
+        gap:10px;
+    }
+
+    .profile-btn{
+        width:100%;
+        justify-content:center;
+    }
+
+    .custom-link{
+        padding:12px !important;
+    }
+
+}
+
+/* Job Card */
+
+.job-card{
+    border-radius:18px;
+    transition:.3s;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.job-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 20px 45px rgba(37,99,235,.18);
+}
+
+.job-title{
+    font-size:24px;
+    font-weight:700;
+    color:#1e293b;
+}
+
+.company-name{
+    color:#64748b;
+    margin-top:5px;
+}
+
+.job-info p{
+    margin-bottom:10px;
+    color:#475569;
+}
+
+.job-card .btn{
+    border-radius:10px;
+    font-weight:600;
+}
+
+
+/* =========================
+   HOME PAGE
+========================= */
+
+.hero-section{
+
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+
+    color:white;
+
+    padding:70px 30px;
+
+    border-radius:22px;
+
+    margin-bottom:40px;
+
+}
+
+.hero-section h1{
+
+    font-size:52px;
+
+    font-weight:700;
+
+}
+
+.hero-section p{
+
+    color:#e2e8f0 !important;
+
+    font-size:20px;
+
+}
+
+.search-card{
+
+    border:none;
+
+    border-radius:18px;
+
+    box-shadow:0 15px 35px rgba(0,0,0,.08);
+
+}
+
+.search-card input,
+
+.search-card select{
+
+    height:52px;
+
+    border-radius:12px;
+
+}
+
+.search-card input:focus,
+
+.search-card select:focus{
+
+    border-color:#2563eb;
+
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+
+}
+
+
+/* ===========================
+   LOGIN PAGE
+=========================== */
+
+.login-page{
+
+    min-height:100vh;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:linear-gradient(135deg,#eff6ff,#dbeafe);
+
+    padding:40px 20px;
+
+}
+
+.login-card{
+
+    border-radius:22px;
+
+    box-shadow:0 20px 50px rgba(0,0,0,.12);
+
+    padding:15px;
+
+}
+
+.login-card .form-control{
+
+    height:52px;
+
+    border-radius:12px;
+
+}
+
+.login-card .form-control:focus{
+
+    border-color:#2563eb;
+
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+
+}
+
+.login-btn{
+
+    height:52px;
+
+    border-radius:12px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.login-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+
+/* ===========================
+   DASHBOARD
+=========================== */
+
+.dashboard-header{
+
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+
+    color:white;
+
+    padding:35px;
+
+    border-radius:20px;
+
+    box-shadow:0 12px 30px rgba(37,99,235,.20);
+
+}
+
+.dashboard-card{
+
+    background:white;
+
+    border-radius:18px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+    transition:.3s;
+
+    height:100%;
+
+}
+
+.dashboard-card:hover{
+
+    transform:translateY(-6px);
+
+    box-shadow:0 20px 40px rgba(0,0,0,.12);
+
+}
+
+.dashboard-card .card-body{
+
+    padding:28px;
+
+}
+
+.dashboard-table{
+
+    background:white;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+}
+
+.dashboard-table td{
+
+    vertical-align:middle;
+
+}
+
+
+
+/* ===========================
+   PROFILE
+=========================== */
+
+.profile-page{
+    background:#f8fafc;
+    min-height:100vh;
+}
+
+.profile-card{
+    border-radius:22px;
+    box-shadow:0 20px 45px rgba(0,0,0,.08);
+}
+
+.profile-input{
+    border-radius:12px;
+    min-height:50px;
+}
+
+.profile-input:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+}
+
+.profile-card .btn{
+    border-radius:12px;
+}

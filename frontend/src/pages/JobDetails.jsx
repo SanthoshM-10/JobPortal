@@ -31,7 +31,11 @@ function JobDetails() {
 
             console.error(error);
 
-            toast.error("Failed to fetch job details.");
+            toast.error(
+                error.response?.data?.message ||
+                error.response?.data ||
+                "Failed to fetch job details."
+            );
 
         } finally {
 
@@ -53,15 +57,23 @@ function JobDetails() {
 
             await deleteJob(id);
 
-            toast.success("Job deleted successfully!");
+            toast.success("Job deleted successfully.");
 
-            navigate("/");
+            setTimeout(() => {
+
+                navigate("/");
+
+            }, 1000);
 
         } catch (error) {
 
             console.error(error);
 
-            toast.error("Failed to delete job.");
+            toast.error(
+                error.response?.data?.message ||
+                error.response?.data ||
+                "Failed to delete job."
+            );
 
         }
 
@@ -103,119 +115,167 @@ function JobDetails() {
     }
 
     return (
+    <div className="container py-5">
 
-        <div className="container mt-5">
+        <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
 
-            <div className="card shadow">
+            <div
+                className="text-white p-5"
+                style={{
+                    background: "linear-gradient(135deg,#2563eb,#1e40af)"
+                }}
+            >
+                <h2 className="fw-bold mb-2">{job.title}</h2>
 
-                <div className="card-header bg-primary text-white">
+                <h5 className="opacity-75 mb-4">
+                    {job.company}
+                </h5>
 
-                    <h2 className="mb-0">
-                        {job.title}
-                    </h2>
+                <div className="d-flex flex-wrap gap-2">
+
+                    <span className="badge bg-light text-dark px-3 py-2">
+                        📍 {job.location}
+                    </span>
+
+                    <span className="badge bg-success px-3 py-2">
+                        ₹{Number(job.salary).toLocaleString("en-IN")}
+                    </span>
+
+                    <span className="badge bg-warning text-dark px-3 py-2">
+                        {job.jobType}
+                    </span>
+
+                    <span className="badge bg-info text-dark px-3 py-2">
+                        {job.experience} Years
+                    </span>
 
                 </div>
 
-                <div className="card-body">
+            </div>
 
-                    <div className="row">
+            <div className="card-body p-4">
 
-                        <div className="col-md-6">
+                <div className="row g-4">
 
-                            <p>
-                                <strong>Company:</strong> {job.company}
-                            </p>
+                    <div className="col-lg-8">
 
-                            <p>
-                                <strong>Location:</strong> {job.location}
-                            </p>
+                        <div className="card border-0 bg-light rounded-4 mb-4">
 
-                            <p>
-                                <strong>Salary:</strong>{" "}
-                                ₹{Number(job.salary).toLocaleString("en-IN")}
-                            </p>
+                            <div className="card-body">
 
-                            <p>
-                                <strong>Experience:</strong>{" "}
-                                {job.experience} Years
-                            </p>
+                                <h4 className="fw-bold mb-3">
+                                    Job Description
+                                </h4>
+
+                                <p className="text-muted mb-0">
+                                    {job.description}
+                                </p>
+
+                            </div>
 
                         </div>
 
-                        <div className="col-md-6">
+                        <div className="card border-0 bg-light rounded-4">
 
-                            <p>
-                                <strong>Job Type:</strong> {job.jobType}
-                            </p>
+                            <div className="card-body">
 
-                            <p>
-                                <strong>Posted Date:</strong>{" "}
-                                {job.postedDate
-                                    ? new Date(job.postedDate).toLocaleDateString()
-                                    : "N/A"}
-                            </p>
+                                <h4 className="fw-bold mb-3">
+                                    Required Skills
+                                </h4>
+
+                                <div className="d-flex flex-wrap gap-2">
+
+                                    {job.skills
+                                        ? job.skills.split(",").map((skill, index) => (
+                                            <span
+                                                key={index}
+                                                className="badge rounded-pill bg-primary px-3 py-2"
+                                            >
+                                                {skill.trim()}
+                                            </span>
+                                        ))
+                                        : "N/A"}
+
+                                </div>
+
+                            </div>
 
                         </div>
 
                     </div>
 
-                    <hr />
+                    <div className="col-lg-4">
 
-                    <h5>Description</h5>
+                        <div className="card border-0 shadow-sm rounded-4">
 
-                    <p>{job.description}</p>
+                            <div className="card-body">
 
-                    <h5>Skills Required</h5>
+                                <h5 className="fw-bold mb-3">
+                                    Job Information
+                                </h5>
 
-                    <div className="mb-4">
+                                <hr />
 
-                        {job.skills
-                            ? job.skills.split(",").map((skill, index) => (
+                                <p>
+                                    <strong>Company</strong><br />
+                                    {job.company}
+                                </p>
 
-                                <span
-                                    key={index}
-                                    className="badge bg-secondary me-2 mb-2"
-                                >
-                                    {skill.trim()}
-                                </span>
+                                <p>
+                                    <strong>Location</strong><br />
+                                    {job.location}
+                                </p>
 
-                            ))
-                            : "N/A"}
+                                <p>
+                                    <strong>Posted</strong><br />
+                                    {job.postedDate
+                                        ? new Date(job.postedDate).toLocaleDateString()
+                                        : "N/A"}
+                                </p>
+
+                                <p>
+                                    <strong>Experience</strong><br />
+                                    {job.experience} Years
+                                </p>
+
+                            </div>
+
+                        </div>
 
                     </div>
 
-                    <div className="d-flex gap-2">
+                </div>
+
+                <div className="d-flex flex-wrap gap-3 mt-4">
+
+                    <button
+                        className="btn btn-outline-primary px-4"
+                        onClick={() => navigate(-1)}
+                    >
+                        ← Back
+                    </button>
+
+                    {(role === "RECRUITER" || role === "ADMIN") && (
+
+                        <Link
+                            to={`/edit-job/${job.id}`}
+                            className="btn btn-warning px-4"
+                        >
+                            Edit Job
+                        </Link>
+
+                    )}
+
+                    {role === "ADMIN" && (
 
                         <button
-                            className="btn btn-primary"
-                            onClick={() => navigate(-1)}
+                            className="btn btn-danger px-4"
+                            onClick={handleDelete}
                         >
-                            Back
+                            Delete Job
                         </button>
 
-                        {(role === "RECRUITER" || role === "ADMIN") && (
-
-                            <Link
-                                to={`/edit-job/${job.id}`}
-                                className="btn btn-warning"
-                            >
-                                Edit Job
-                            </Link>
-
-                        )}
-
-                        {role === "ADMIN" && (
-
-                            <button
-                                className="btn btn-danger"
-                                onClick={handleDelete}
-                            >
-                                Delete Job
-                            </button>
-
-                        )}
-
-                    </div>
+                    )}
 
                 </div>
 
@@ -223,7 +283,8 @@ function JobDetails() {
 
         </div>
 
-    );
+    </div>
+);
 
 }
 

@@ -64,31 +64,19 @@ public class AuthService {
 
     public AuthenticationResponse login(LoginRequest request) {
 
-        System.out.println("=================================");
-        System.out.println("Entered Email : " + request.getEmail());
-
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() ->
                         new RuntimeException("Invalid email or password"));
 
-        System.out.println("Database Email : " + user.getEmail());
-
-        System.out.println("Entered Password : " + request.getPassword());
-        System.out.println("Stored Password : " + user.getPassword());
-
         boolean matches = passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword());
-
-        System.out.println("Password Match : " + matches);
 
         if (!matches) {
             throw new RuntimeException("Invalid email or password");
         }
 
         String token = jwtService.generateToken(user.getEmail());
-
-        System.out.println("Generated Token : " + token);
 
         return new AuthenticationResponse(
                 token,

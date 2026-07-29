@@ -21,6 +21,8 @@ public interface ApplicationRepository extends JpaRepository<Application, Intege
 
     Optional<Application> findByUserAndJob(User user, Job job);
 
+    List<Application> findByJobIn(List<Job> jobs);
+
 
     @Modifying
     @Transactional

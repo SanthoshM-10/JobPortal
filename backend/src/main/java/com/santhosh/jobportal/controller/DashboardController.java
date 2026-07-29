@@ -4,6 +4,7 @@ import com.santhosh.jobportal.dto.DashboardResponse;
 import com.santhosh.jobportal.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,11 +17,8 @@ public class DashboardController {
 
     @GetMapping
     public ResponseEntity<DashboardResponse> getDashboard() {
-
         DashboardResponse response = dashboardService.getDashboard();
-
         return ResponseEntity.ok(response);
-
     }
 
 }

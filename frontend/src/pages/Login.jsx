@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "../services/authService";
+import { toast } from "react-toastify";
 
 const Login = () => {
 
@@ -13,6 +14,8 @@ const Login = () => {
 
     const [error, setError] = useState("");
 
+    const [loading, setLoading] = useState(false);
+
     const handleChange = (e) => {
 
         setFormData({
@@ -24,48 +27,69 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
 
-        e.preventDefault();
+    e.preventDefault();
 
-        try {
+    setError("");
 
-            const response = await login(formData);
+    try {
 
-            localStorage.setItem("token", response.data.token);
-            localStorage.setItem("role", response.data.role);
-            localStorage.setItem("name", response.data.name);
-            localStorage.setItem("email", response.data.email);
+        setLoading(true);
 
-            alert("Login Successful");
+        const response = await login(formData);
+
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("role", response.data.role);
+        localStorage.setItem("name", response.data.name);
+        localStorage.setItem("email", response.data.email);
+
+        toast.success("Login Successful!");
+
+        setTimeout(() => {
 
             navigate("/");
 
-        } catch (err) {
+        }, 1000);
 
-            console.log(err);
+    } catch (err) {
 
-            setError("Invalid Email or Password");
+        console.error(err);
 
-        }
+        const message =
+            err.response?.data?.message ||
+            err.response?.data ||
+            "Invalid Email or Password";
 
-    };
+        setError(message);
+
+        toast.error(message);
+
+    } finally {
+
+        setLoading(false);
+
+    }
+
+};
 
     return (
 
-        <div className="container mt-5">
+        <div className="login-page">
 
             <div className="row justify-content-center">
 
-                <div className="col-md-5">
+                <div className="col-lg-5 col-md-7">
 
-                    <div className="card shadow">
+                    <div className="card login-card border-0">
 
                         <div className="card-body">
 
-                            <h2 className="text-center mb-4">
-
-                                Login
-
+                            <h2 className="text-center fw-bold mb-2">
+                                Welcome Back 👋
                             </h2>
+
+                            <p className="text-center text-muted mb-4">
+                                Login to continue your job search.
+                            </p>
 
                             {
 
@@ -89,6 +113,7 @@ const Login = () => {
                                         type="email"
                                         name="email"
                                         className="form-control"
+                                        placeholder="Enter your email"
                                         value={formData.email}
                                         onChange={handleChange}
                                         required
@@ -104,6 +129,7 @@ const Login = () => {
                                         type="password"
                                         name="password"
                                         className="form-control"
+                                        placeholder="Enter your password"
                                         value={formData.password}
                                         onChange={handleChange}
                                         required
@@ -123,23 +149,44 @@ const Login = () => {
                                 </div>
 
                                 <button
-                                    className="btn btn-primary w-100"
+                                    className="btn btn-primary w-100 login-btn"
+                                    type="submit"
+                                    disabled={loading}
                                 >
-                                    Login
-                                </button>
+
+                                    {
+
+                                        loading
+
+                                            ?
+
+                                            "Logging in..."
+
+                                            :
+
+                                            "Login →"
+
+                                    }
+
+                            </button>
 
                             </form>
 
                             <hr />
 
-                            <div className="text-center">
+                            <div className="text-center mt-4">
 
-                                Don't have an account?{" "}
+                                <span className="text-muted">
+                                    Don't have an account?
+                                </span>
+
+                                {" "}
 
                                 <Link
                                     to="/register"
+                                    className="fw-bold text-decoration-none"
                                 >
-                                    Register
+                                    Register Now
                                 </Link>
 
                             </div>

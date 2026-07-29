@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getMyJobs } from "../services/jobService";
+import { toast } from "react-toastify";
 
 function MyJobs() {
 
@@ -11,26 +12,27 @@ function MyJobs() {
         fetchJobs();
     }, []);
 
-    console.log("MyJobs component rendered");
 
     const fetchJobs = async () => {
 
-        console.log("fetchJobs() called");
 
         try {
 
-            console.log("Calling getMyJobs()...");
 
             const response = await getMyJobs();
 
-            console.log("API Response:", response);
-            console.log("Response Data:", response.data);
 
             setJobs(response.data);
 
         } catch (error) {
 
             console.error("Error:", error);
+
+            toast.error(
+                error.response?.data?.message ||
+                error.response?.data ||
+                "Failed to load your jobs."
+            );
 
         } finally {
 
@@ -42,13 +44,30 @@ function MyJobs() {
 
     if (loading) {
 
-        return (
-            <div className="container mt-5 text-center">
-                <h4>Loading...</h4>
-            </div>
-        );
+    return (
 
-    }
+        <div className="container mt-5 text-center">
+
+            <div
+                className="spinner-border text-primary"
+                role="status"
+            >
+
+                <span className="visually-hidden">
+                    Loading...
+                </span>
+
+            </div>
+
+            <h4 className="mt-3">
+                Loading Jobs...
+            </h4>
+
+        </div>
+
+    );
+
+}
 
     return (
 

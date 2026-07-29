@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { verifyOtp } from "../services/authService";
+import { toast } from "react-toastify";
 
 function VerifyOtp() {
 
@@ -15,85 +16,120 @@ function VerifyOtp() {
 
     const handleSubmit = async (e) => {
 
-        e.preventDefault();
+    e.preventDefault();
 
-        if (!otp.trim()) {
+    if (!otp.trim()) {
 
-            alert("Please enter the OTP.");
+        toast.warning("Please enter the OTP.");
 
-            return;
+        return;
 
-        }
+    }
 
-        try {
+    try {
 
-            setLoading(true);
+        setLoading(true);
 
-            const response = await verifyOtp(email, otp);
+        const response = await verifyOtp(email, otp);
 
-            alert(response.data);
+        toast.success(response.data);
+
+        setTimeout(() => {
 
             navigate("/reset-password", {
                 state: {
-                    email: email
+                    email
                 }
             });
 
-        } catch (error) {
+        }, 1000);
 
-            console.error(error);
+    } catch (error) {
 
-            alert(
-                error.response?.data ||
-                "Invalid or expired OTP."
-            );
+        console.error(error);
 
-        } finally {
+        toast.error(
+            error.response?.data?.message ||
+            error.response?.data ||
+            "Invalid or expired OTP."
+        );
 
-            setLoading(false);
+    } finally {
 
-        }
+        setLoading(false);
 
-    };
+    }
+
+};
 
     return (
 
-        <div className="container mt-5">
+    <div
+        className="container py-5 d-flex justify-content-center align-items-center"
+        style={{ minHeight: "80vh" }}
+    >
+
+        <div
+            className="card border-0 shadow-lg rounded-4 overflow-hidden"
+            style={{ maxWidth: "500px", width: "100%" }}
+        >
 
             <div
-                className="card shadow p-4 mx-auto"
-                style={{ maxWidth: "500px" }}
+                className="text-center text-white py-4"
+                style={{
+                    background: "linear-gradient(135deg,#2563eb,#1e40af)"
+                }}
             >
 
-                <h2 className="text-center mb-4">
+                <h2 className="fw-bold mb-2">
+
                     Verify OTP
+
                 </h2>
 
-                <div className="alert alert-info">
+                <p className="mb-0 opacity-75">
 
-                    OTP sent to
+                    Enter the One-Time Password sent to your email.
 
-                    <strong>
-                        {" "}
+                </p>
+
+            </div>
+
+            <div className="card-body p-4">
+
+                <div className="alert alert-info rounded-3">
+
+                    <strong>OTP sent to</strong>
+
+                    <br />
+
+                    <span className="fw-semibold">
+
                         {email}
-                    </strong>
+
+                    </span>
 
                 </div>
 
                 <form onSubmit={handleSubmit}>
 
-                    <div className="mb-3">
+                    <div className="mb-4">
 
-                        <label className="form-label">
+                        <label className="form-label fw-semibold">
 
-                            Enter 6-Digit OTP
+                            6-Digit OTP
 
                         </label>
 
                         <input
                             type="text"
-                            className="form-control"
-                            placeholder="Enter OTP"
+                            className="form-control rounded-3 text-center"
+                            style={{
+                                fontSize: "1.3rem",
+                                letterSpacing: "8px",
+                                fontWeight: "600"
+                            }}
+                            placeholder="123456"
                             maxLength={6}
                             value={otp}
                             onChange={(e) =>
@@ -104,29 +140,51 @@ function VerifyOtp() {
 
                     </div>
 
-                    <button
-                        type="submit"
-                        className="btn btn-primary w-100"
-                        disabled={loading}
-                    >
+                    <div className="d-grid">
 
-                        {
+                        <button
+                            type="submit"
+                            className="btn btn-primary btn-lg rounded-3"
+                            disabled={loading}
+                        >
 
-                            loading
-                                ? "Verifying..."
-                                : "Verify OTP"
+                            {
 
-                        }
+                                loading
 
-                    </button>
+                                    ?
+
+                                    "Verifying..."
+
+                                    :
+
+                                    "Verify OTP"
+
+                            }
+
+                        </button>
+
+                    </div>
 
                 </form>
+
+                <div className="text-center mt-4">
+
+                    <small className="text-muted">
+
+                        Please enter the OTP exactly as received in your email.
+
+                    </small>
+
+                </div>
 
             </div>
 
         </div>
 
-    );
+    </div>
+
+);
 
 }
 
