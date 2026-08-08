@@ -1,44 +1,27 @@
 package com.santhosh.jobportal.service;
 
-import com.resend.Resend;
-import com.resend.services.emails.model.CreateEmailOptions;
-import com.resend.services.emails.model.CreateEmailResponse;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
 
-    private final Resend resend;
+    @Autowired
+    private JavaMailSender mailSender;
 
-    public EmailService(
-            @Value("${resend.api.key}") String apiKey) {
+    public void sendEmail(String to, String subject, String body) {
 
-        this.resend = new Resend(apiKey);
-    }
+        SimpleMailMessage message = new SimpleMailMessage();
 
-    public void sendEmail(String to,
-                          String subject,
-                          String body) {
+        message.setFrom("santhoshmathineeti@gmail.com");
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
 
-        try {
+        mailSender.send(message);
 
-            CreateEmailOptions email =
-                    CreateEmailOptions.builder()
-                            .from("JobPortal <onboarding@resend.dev>")
-                            .to(to)
-                            .subject(subject)
-                            .text(body)
-                            .build();
-
-            CreateEmailResponse response =
-                    resend.emails().send(email);
-
-            System.out.println("Email sent successfully");
-            System.out.println(response.getId());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        System.out.println("Email sent successfully.");
     }
 }
