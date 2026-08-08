@@ -1,41 +1,44 @@
 package com.santhosh.jobportal.service;
 
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
+import com.resend.Resend;
+import com.resend.services.emails.model.CreateEmailOptions;
+import com.resend.services.emails.model.CreateEmailResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class EmailService {
 
-    @Value("${spring.mail.username}")
-    private String username;
+    private final Resend resend;
 
-    @PostConstruct
-    public void test() {
-        System.out.println("Mail Username: " + username);
+    public EmailService(
+            @Value("${resend.api.key}") String apiKey) {
+
+        this.resend = new Resend(apiKey);
     }
 
-    private final JavaMailSender mailSender;
+    public void sendEmail(String to,
+                          String subject,
+                          String body) {
 
-    public void sendEmail(String to, String subject, String body) {
+        try {
 
-        System.out.println("Inside EmailService");
+            CreateEmailOptions email =
+                    CreateEmailOptions.builder()
+                            .from("JobPortal <onboarding@resend.dev>")
+                            .to(to)
+                            .subject(subject)
+                            .text(body)
+                            .build();
 
-        SimpleMailMessage message = new SimpleMailMessage();
+            CreateEmailResponse response =
+                    resend.emails().send(email);
 
-        message.setFrom(username);
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
+            System.out.println("Email sent successfully");
+            System.out.println(response.getId());
 
-        System.out.println("Before sending email");
-
-        mailSender.send(message);
-
-        System.out.println("Email sent successfully to: " + to);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
